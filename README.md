@@ -1,10 +1,15 @@
-# scrutinizer
+# Scrutinizer
 Open source release of the 2007 Scrutinizer vision simulating web browser built with Adobe AIR.  
 
 See also http://andyedmonds.com/scrutinizer
 
+# What's it for?
+
+
 # Related Works
 - Commercial Service: http://www.attensee.com
+- Academic WOrk
+-- D. Lagun, E. Agichtein, "ViewSer: A Tool for Large-Scale Studies of Web Search Result Examination", to appear at CHI 2011. http://www.mathcs.emory.edu/~dlagun/pubs/sigir636-lagun.pdf
 
 # Code Update Status
 - Using Flex SDK 4.6 in 3.1 compatibility mode
@@ -23,7 +28,7 @@ TBD
 - Designers: Evan Mullins, Dave Hallock
 - Libraries: ColorMatrix derived from work by Mario Klingeman
 
-
+# License
 Copyright (c) 2012, Adndy Edmonds
 All rights reserved.
 
