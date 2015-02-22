@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:WindowedApplication 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="absolute"
+	verticalScrollPolicy="off" horizontalScrollPolicy="off"
+	creationComplete="initApp()"
+	verticalGap="0" 
+	borderThickness="0" 
+	dropShadowEnabled="false"
+	width="960"
+	height="600"
+
+	>
+	<mx:Script>
+		<![CDATA[
+		import mx.core.Window;
+		import mx.events.ResizeEvent;
+		import mx.core.UIComponent;
+		import mx.controls.Alert;
+		import mx.events.MenuEvent;
+		import mx.controls.Alert;
+		import mx.collections.*;
+		
+		import flash.html.HTMLLoader;
+		import flash.display.Bitmap;
+		import flash.display.Loader;
+		import flash.display.*;
+		import flash.events.*;
+		import flash.net.URLRequest
+		import flash.display.BitmapData;
+		import flash.filters.*;
+		import flash.geom.Matrix;
+		import flash.geom.Rectangle;
+		import flash.geom.Point;
+		import flash.geom.*;
+		import flash.display.Graphics;
+		import flash.display.MovieClip;
+		
+		import model.RegistrationEvent;
+		
+		import com.quasimondo.geom.ColorMatrix;
+		private var prefColorSaturation:Number = .2;
+		private var prefFovealWidth:Number = 600;
+		
+		private var prefFovealHeight:Number = 400;
+		private var prefAutozoom:Boolean = false;
+		private var prefColor:String = "xxx";// "0xffcc00";
+		private var prefColor2:String = "";// "0xffcc00";
+		private var maxZoomOut:Number = 6.5;
+		//create a movie clip to hold the external file
+		private var periphery:MovieClip = new MovieClip();
+		private var fovealView:MovieClip = new MovieClip();
+		private var foveal:MovieClip = new MovieClip();
+		private	var fovealDepth:Number = 1; // y of foveal view
+		private	var fovealWidth:Number = fovealDepth * 1.5 * 100;
+		private	var fovealHeight:Number = fovealDepth * 100;
+		private	var grayluma:Array  = [.3, .59, .11, 0, 0];
+		private var firstrun:Boolean = true;
+		private var firstpage:Boolean = true;
+		
+		
+		private var history:Array = new Array();
+		private var historyIndex:Number = 0;
+		private var fsCM:ContextMenu;
+		private var fs:ContextMenuItem;
+		private var xfs:ContextMenuItem;
+		
+		private const FIRST_RUN_TOKEN_FILE:File = File.applicationStorageDirectory.resolvePath("firstrun");
+		
+		
+		private const wheelDeltaFactor:Number = 0.25;
+		// Distance Foo
+		private var timerOffset:Number = 0;
+		private var timer:Number;
+		//	private var previewWindow:Window;
+		
+		include "save.as";
+		include "sharedObject.as";
+		include "velocity.as"; // "velocity_guided.as"; // 
+		include "menu.as";
+		
+		
+		private function onCreationComplete():void
+		{
+			// TODO: Update for open source release		
+			//checkForUpdates();				
+			/*				
+			if(FIRST_RUN_TOKEN_FILE.exists)
+			{
+			firstrun = false;
+			//outputField.text = "This application HAS been run before";
+			}
+			else
+			{
+			firstrun = true;
+			var fs:FileStream = new FileStream();
+			fs.open(FIRST_RUN_TOKEN_FILE, FileMode.WRITE);
+			fs.close();
+			
+			//outputField.text = "This application HAS NOT been run before";
+			}
+			*/
+		}
+		
+		
+		private function refreshOnResize(event:Event) {
+			grabScreen();
+		}
+		private function refreshScreen(event:MouseEvent):void {
+			grabScreen();	
+		
+		}
+		private function grabScreen():void {
+			if (foveal.numChildren>0) {
+				foveal.removeChild(foveal.getChildAt(0));
+			}
+				if (periphery.numChildren>0) {
+				periphery.removeChild(periphery.getChildAt(0));
+			}
+			
+			if (htmlControl.contains(foveal)) {
+				htmlControl.removeChild(fovealView);
+				htmlControl.removeChild(periphery);
+				htmlControl.removeChild(foveal);
+			}
+			initFovealView();
+		}
+		
+		private function initFovealView():void {
+			foveal.name="foveal";
+			fovealView.name="fovealView";
+			periphery.name="periphery";
+			foveal.mouseEnabled=false;
+			foveal.mouseChildren=false;
+			fovealView.mouseEnabled=false;
+			fovealView.mouseChildren=false;
+			periphery.mouseEnabled=false;
+			periphery.mouseChildren=false;
+		
+		
+			periphery.alpha = 1;
+			foveal.alpha=1;
+			fovealView.alpha=1;
+			
+			
+			foveal.addChild(new Bitmap(getBitmapData(htmlControl)));
+			periphery.addChild(new Bitmap(getBitmapData(htmlControl)));
+			
+			htmlControl.addChild(fovealView);
+			htmlControl.addChild(periphery);
+			htmlControl.addChild(foveal);
+			
+			
+			overlayMask();
+			/*
+			//trace("Adding Event Listeners");
+			systemManager.addEventListener(MouseEvent.MOUSE_WHEEL, doMouseWheel,true);
+			
+			stage.addEventListener(MouseEvent.MOUSE_MOVE ,mousemove,true);
+			
+			stage.addEventListener(MouseEvent.MOUSE_DOWN ,refreshScreen,true);
+			systemManager.addEventListener(KeyboardEvent.KEY_UP,keyHandler,true);
+			*/
+			// stage.nativeWindow.addEventListener(Event.RESIZE, windowResizeHandler); 
+			/* Hack to start with viz off */
+			if(firstpage) {
+			//					trace("First page reset");
+			toggleOverlay();	
+			firstpage = false;
+			}					 
+			
+			//stage.addEventListener(KeyboardEvent.KEY_UP,function(event:KeyboardEvent):void {keyHandler(event);					
+			
+			}
+			private function doMouseWheel(event:MouseEvent):void {
+			//             	trace("Zoom from wheel " + event.delta + " at factor " + wheelDeltaFactor);
+			if(!event.ctrlKey  && prefAutozoom ==false) {
+				// Disabling until configuration of foveal size based upon screen available
+				//zoomFovea(event.delta * wheelDeltaFactor);
+				event.stopImmediatePropagation();
+			} else {
+				grabScreen();	
+			
+			}
+		}				
+		
+		private function overlayMask():void {
+		
+			var cm:ColorMatrix = new ColorMatrix();
+			cm.adjustSaturation(.2);
+			
+			foveal.width = periphery.width;
+			foveal.height = periphery.height;
+			
+			var blur:BlurFilter = new BlurFilter(10,10,3);
+			
+			periphery.filters = [blur, new ColorMatrixFilter(cm.matrix)];
+			
+			//Create a new bitmap object in memory that is the same size as
+			//the loaded file and fill it with transparent pixels
+			// make a circle movieclip c, centered at 400, 100 with radius=80
+			// apply a radial gradient fill to the circle
+			var r:Number = fovealWidth;
+			var x:Number = fovealWidth/2;
+			var y:Number = fovealWidth/2;
+			
+			// constant used in calculation
+			var A:Number = Math.tan(22.5 * Math.PI/180);
+			
+			// variables for each of 8 segments
+			var endx:Number;
+			var endy:Number;
+			var cx:Number;
+			var cy:Number;
+			var offset:Number;
+			var angle:Number;
+			
+			fovealView.graphics.clear();
+			
+			var myMatrix:Matrix = new Matrix();
+			offset = -30;
+			myMatrix.createGradientBox(fovealWidth, fovealWidth, 0, offset, 0); ///, "pad", "RGB");
+			if(prefColor.length && prefColor2.length) {
+			//					trace("PREF: Rendering color. ");
+				fovealView.graphics.beginGradientFill("radial", [0xffcc00, 0xffcc00], [200, 200], [150, 255], myMatrix);
+			} else {
+				fovealView.graphics.beginGradientFill("radial", [0x000000, 0x000000], [150, 0], [25, 255], myMatrix);
+			}			    
+			fovealView.graphics.moveTo(x+r+offset, y);
+			for (angle = 45; angle<=360; angle += 45) {
+				// endpoint
+				endx = r*Math.cos(angle*Math.PI/180);
+				endy = r*Math.sin(angle*Math.PI/180);
+				// control:
+				// (angle-90 is used to give the correct sign)
+				cx =endx + r* A *Math.cos((angle-90)*Math.PI/180);
+				cy =endy + r* A *Math.sin((angle-90)*Math.PI/180);
+				fovealView.graphics.curveTo(cx+x+offset, cy+y, endx+x+offset, endy+y);
+				
+			}
+			
+			offset = 30;
+			myMatrix.createGradientBox(fovealWidth, fovealWidth, 0, offset, 0); ///, "pad", "RGB");
+			
+			fovealView.graphics.beginGradientFill("radial", [0x000000, 0x000000], [150, 0], [25, 255], myMatrix);
+			
+			fovealView.graphics.moveTo(x+r+offset, y);
+			
+			for (angle = 45; angle<=360; angle += 45) {
+			// endpoint
+			endx = r*Math.cos(angle*Math.PI/180);
+			endy = r*Math.sin(angle*Math.PI/180);
+			// control:
+			// (angle-90 is used to give the correct sign)
+			cx =endx + r* A *Math.cos((angle-90)*Math.PI/180);
+			cy =endy + r* A *Math.sin((angle-90)*Math.PI/180);
+			fovealView.graphics.curveTo(cx+x+offset, cy+y, endx+x+offset, endy+y);
+			
+			}
+			
+			
+			foveal.mask = fovealView;
+			foveal.cacheAsBitmap = true;
+			// What does this do?
+			if(prefColor.length) {
+				fovealView.blendMode = BlendMode.HARDLIGHT;
+			} else {
+				fovealView.blendMode = BlendMode.INVERT;
+			}
+			fovealView.cacheAsBitmap = true;
+			
+			cm = null;
+			blur = null;
+			myMatrix = null;
+			
+			}
+			private function mousemove(event:MouseEvent):void {
+			fovealView.x = mouseX - (fovealView.width/4);
+			fovealView.y = mouseY - (fovealView.height/4);
+			if(prefAutozoom == true)  logMouseMove(mouseX, mouseY, parseInt(new Date().getTime().toString()));
+		}
+		
+		private function recomputeFoveal():void {
+			var mod:Number = fovealDepth-1;
+			//trace("ZOOM: Computing foveal depth at " + mod );
+			var blur:BlurFilter = new BlurFilter(mod*1.04,mod*1.04,1);
+			if(mod && 1==0) {
+			foveal.filters = [blur];
+			fovealWidth = prefFovealWidth * (1 + mod/5);
+			fovealHeight = prefFovealHeight * (1 + mod/5);
+			//trace("Resizing Mask to " + fovealWidth + " x " + fovealHeight);
+			fovealView.width = fovealWidth;
+			fovealView.height = fovealHeight;
+			
+			} else {
+				foveal.filters = [];
+				fovealView.width = prefFovealWidth;
+				fovealView.height = prefFovealHeight;
+			}
+			fovealView.y = mouseY - (fovealView.height/4);
+			fovealView.x = mouseX - (fovealView.width/4);
+			fovealView.cacheAsBitmap = true;
+		}
+		
+		
+		//this function is called by the 'loader' object when the file is loaded and ready to use
+		private function onLoadInit(event:Event):void
+		{
+		//			    trace("Loaded. " + firstpage);
+		overlayMask();	
+		
+		};
+		
+		private function getBitmapData(target:UIComponent):BitmapData {
+			var bd:BitmapData = new BitmapData (target.width, target.height);
+			var m:Matrix = new Matrix();
+			bd.draw(target,m);
+			return bd;
+		}
+		
+		
+		private function initApp():void {
+		var today:Date = new Date();
+		getApplicationInformation();
+		trace(versionNumber);
+		aboutPanelHTML.location = 'http://andyedmonds.com/scrutinizer?v=' + versionNumber;
+		htmlControl.location = 'http://andyedmonds.com/scrutinizer?v=' + versionNumber;
+		expired =  (today > expireDate);
+		
+		if (expired){
+		var urlReq:URLRequest = new URLRequest(expireUrl);
+		htmlControl.htmlLoader.load( urlReq );
+		}
+		onCreationComplete();
+		if(firstrun) showTOS();
+		fsCM =createContextMenu( new ContextMenu());
+		
+		
+		// finally, attach the context menu to a movieclip
+		this.contextMenu = fsCM;
+		
+		//trace("Adding Event Listeners");
+		
+		
+		systemManager.addEventListener(MouseEvent.MOUSE_MOVE ,mousemove,true);
+		
+		systemManager.addEventListener(MouseEvent.MOUSE_DOWN ,refreshScreen,true);
+		
+		systemManager.addEventListener(Event.RESIZE, refreshOnResize, true);
+		// ,refreshScreen,true);
+		
+		}
+		private function keyHandler(event:KeyboardEvent):void {
+			//	           trace(event.keyCode + "/" + event.charCode+ ' vs ' + Keyboard.DOWN + " with ctrl " + event.ctrlKey);
+			//overlayMask();
+			//getScreen();
+			switch (event.keyCode)
+			{
+			case Keyboard.DOWN:
+				if (!event.ctrlKey && !prefAutozoom) {
+				
+				trace("DOWN");
+				event.stopImmediatePropagation();
+				//event.preventDefault();
+				// Disabling until configuration of foveal size based upon screen available
+				//zoomFovea(-1);
+			
+				} else {
+					grabScreen();	
+				
+				}
+				break;
+			case Keyboard.UP:
+				if (!event.ctrlKey && !prefAutozoom) {
+					trace("UP");
+					event.stopImmediatePropagation();
+					//event.preventDefault();
+					//  Disabling until configuration of foveal size based upon screen available
+					// zoomFovea(1);
+				} else {
+					grabScreen();	
+				}
+				break;
+			
+			default:
+				
+				grabScreen();
+				break; 						
+			}
+		
+		}
+		private function windowResize(event:Event):void {
+			grabScreen();
+		}
+		private function goTriggered(event:Event):void {
+			goBtn.label="... ";	
+			//		    	trace(htmlControl.htmlLoader.contentHeight);
+			//		    	trace("Updating history w/ length " + htmlControl.htmlLoader.historyLength + "at " +  htmlControl.htmlLoader.historyPosition);
+			if(htmlControl.htmlLoader.historyLength > 1) {
+			//backBtn.alpha = 100;
+			//backBtn.enabled = true;
+			//						trace("Back enabled");
+			
+			} else {
+			//backBtn.alpha = 10;
+			//backBtn.enabled = false;
+			//						trace("Back disabled");
+			
+			}
+			
+			if(htmlControl.htmlLoader.historyLength > 0 && htmlControl.htmlLoader.historyPosition  < (htmlControl.htmlLoader.historyLength-2)) 
+			{
+			//forwardBtn.alpha = 100;
+			//forwardBtn.enabled = true;
+			//						trace("Forward enabled");
+			
+			} else {
+			//forwardBtn.alpha = 10;
+			//forwardBtn.enabled = false;
+			//						trace("Forward disabled");
+			}
+			}
+			private function urlInput (event:KeyboardEvent):void {
+			//		    	 trace("url entry" + event.keyCode + "/" + event.charCode);
+			//overlayMask();
+			if (event.charCode == 13) {
+			goToURL();
+			}
+		
+		}
+		
+		
+		private function zoomFovea(delta:Number):void {
+			//trace("Zoomin");
+			if((delta>0 && fovealDepth<maxZoomOut) || (delta<0 && fovealDepth > 1)) {
+			// Disabling until configuration of foveal size based upon screen available
+			// fovealDepth+=delta;
+			fovealDepth = 1; 
+			if(fovealDepth < 1) fovealDepth = 1;
+			
+			if(fovealDepth > maxZoomOut) fovealDepth = maxZoomOut;
+			//					trace("Depth:" + fovealDepth);
+			recomputeFoveal();
+			overlayMask();
+			}
+		}
+		
+		private function domInitialized( event:Event ):void {
+		}
+		private function completeHandler( event:Event ):void {
+		}
+		
+		private function goToURL() : void {
+		//				trace("Go To URL..."+ urlTxt.text);
+		if (urlTxt.text.indexOf(":")<0) {
+		urlTxt.text = "http://"+urlTxt.text;
+		}
+		var urlReq:URLRequest = new URLRequest(urlTxt.text);
+		goBtn.label = "... ";
+		htmlControl.htmlLoader.load( urlReq );
+		}
+		private function goBackContext(event:Event):void {
+		goBack();
+		
+		}
+		private function goBack() : void {
+		htmlControl.historyBack();
+		}
+		private function goForward() : void {
+		htmlControl.historyForward();
+		}
+		private function refresh() : void {
+		htmlControl.htmlLoader.reload();
+		}
+		private function cancelLoad() : void {
+		htmlControl.htmlLoader.cancelLoad();
+		goBtn.label = " GO ";
+		}
+		private function pageLoaded() : void {
+		
+		var url:String = htmlControl.htmlLoader.location;
+		
+		
+		urlTxt.text = url;
+		goBtn.label=" GO ";
+		grabScreen();
+		
+		}
+		private function toggleOverlay():void {
+			if (fovealView.visible) {
+				//toggleViz.toggled = false;
+				//					trace(">>>>>>>>>>" + menubar.menuBarItems[3]);//.menuBarItems[2]);//[2].@toggled = false;
+				
+				fovealView.visible=false;
+				periphery.visible=false;
+				foveal.visible=false;
+				//htmlControl.mouseEnabled=true;
+				//htmlControl.mouseChildren=true;
+				//					trace("Removing Event Listeners");
+				stage.removeEventListener(MouseEvent.MOUSE_WHEEL, doMouseWheel, true);
+				stage.removeEventListener(KeyboardEvent.KEY_UP, keyHandler, true);
+				systemManager.removeEventListener(MouseEvent.MOUSE_WHEEL, doMouseWheel, true);
+				systemManager.removeEventListener(MouseEvent.MOUSE_DOWN ,refreshScreen,true);
+				systemManager.removeEventListener(Event.RESIZE ,refreshOnResize,true);
+				
+			
+			}else {
+			
+				stage.addEventListener(MouseEvent.MOUSE_WHEEL, doMouseWheel,true);
+				stage.addEventListener(KeyboardEvent.KEY_UP,keyHandler,true);
+				//toggleViz.toggled = true;	
+				//menubar.menus[3].menuBarItems[2].@toggled = true;								
+				fovealView.visible=true;
+				periphery.visible=true;
+				foveal.visible=true;
+				grabScreen();
+				//htmlControl.mouseEnabled=false;
+				//htmlControl.mouseChildren=false;
+				fovealDepth = 1;
+				recomputeFoveal();
+				overlayMask();
+			}
+		}
+		private function showAbout():void {
+			aboutCancelButton.visible = false;
+			
+			aboutCloseButton.label = 'Close';
+			aboutPanelHTML.location = 'http://andyedmonds.com/scrutinizer?v='+versionNumber;
+			aboutPanel.visible=true;
+		}
+		private function showTOS():void {
+			aboutPanelHTML.location = 'http://andyedmonds.com/scrutinizer?v='+versionNumber;
+			aboutCloseButton.label = 'OK';
+			aboutCancelButton.visible = true;
+			aboutPanel.visible=true;
+		}
+		
+		// functions to enter and leave full screen mode
+		private function goFullScreen(event:ContextMenuEvent):void{
+			stage.displayState = StageDisplayState.FULL_SCREEN;
+			grabScreen();
+		}
+		private function exitFullScreen(event:ContextMenuEvent):void{
+			stage.displayState = StageDisplayState.NORMAL;
+			//setTimout(grabScreen,500);
+			grabScreen();
+		}
+		
+		// function to enable and disable the context menu items,
+		// based on what mode we are in.
+		private function menuHandler(event:ContextMenuEvent):void{
+			if (stage.displayState == StageDisplayState.NORMAL){
+			event.target.customItems[2].enabled = true;
+			event.target.customItems[3].enabled = false;
+			}
+			else{
+			event.target.customItems[2].enabled = false;
+			event.target.customItems[3].enabled = true;
+			}
+			}
+			
+			private function windowResizeHandler(event:ResizeEvent):void {
+			grabScreen();	
+		}
+		
+		
+		]]>
+	</mx:Script>
+	
+	
+	<mx:ApplicationControlBar dock="true" paddingTop="0" paddingBottom="0" borderThickness="0" cornerRadius="0" width="100%">
+		<mx:VBox width="100%">
+			<mx:HBox width="100%">
+				<mx:MenuBar  id="menubar"  labelField="@label" itemClick="fileMenuHandler(event);" dataProvider="{menuBarCollection}" click="trace('clik');">
+				</mx:MenuBar>
+				<mx:Spacer width="100%"/>
+				<mx:Image source="icons/Scrutinizer_Logo_Dark.png" />	
+			</mx:HBox>
+			<mx:HBox width="100%">
+				
+				<mx:Button id="backBtn" click="goBack()" toolTip="Go Back one page" 
+						   icon="@Embed(source='icons/scrutinizer_arrow_back.png')" themeColor="#99CC33"/>
+				<mx:Button id="forwardBtn" click="goForward()" toolTip="Go Forward one page" themeColor="#99CC33" >
+					<mx:icon>@Embed(source='icons/scrutinizer_arrow_forward.png')</mx:icon>
+				</mx:Button>
+				<mx:TextInput id="urlTxt" text="http://andyedmonds.com/scrutinizer" width="100%" keyUp="urlInput(event);" />
+				<mx:Button id="goBtn" label=" Go " click="goToURL()" toolTip="Go to the address in the location bar" width="50" />
+				<mx:Button id="stopBtn" label="Stop" toolTip="Stop loading this page" click="cancelLoad()" />
+				<mx:Button id="refreshBtn" toolTip="Disactivate/Activate Scrutinizer"  click="toggleOverlay()">
+					<mx:icon>@Embed(source='icons/scrutinzer_logo_eyeball.png')</mx:icon>
+				</mx:Button>
+				<mx:Button id="aboutBtn" click="showAbout()" toolTip="See more About Scrutinizer" 
+						   icon="@Embed(source='icons/about!2.png')" themeColor="#99CC33"/>
+			</mx:HBox>
+		</mx:VBox>	
+		
+	</mx:ApplicationControlBar>
+	
+	<mx:Panel id="htmlContainer" width="100%" height="100%" backgroundColor="red" layout="absolute" cornerRadius="0" dropShadowEnabled="false" headerHeight="0" paddingLeft="0" borderThicknessLeft="0" borderThicknessRight="0" borderThicknessBottom="0">
+		<mx:HTML location="" id="htmlControl"  locationChange="goTriggered(event)"
+				 width="100%" height="100%" paddingLeft="0" complete="pageLoaded()" mouseUp="grabScreen();" />		
+	</mx:Panel>
+	<mx:Panel id="aboutPanel" visible="false" includeInLayout="false" horizontalCenter="true" verticalCenter="true" x="200" y="100" width="600" height="450" >
+		<mx:VBox width="100%" height="100%" borderThickness="20">
+			<mx:HTML id="aboutPanelHTML" location="" width="100%" height="100%" />
+			<mx:HBox width="100%" paddingBottom="20">
+				<mx:Spacer width="50%"/>
+				<mx:Button x="280" id="aboutCloseButton" label="Close" click="aboutPanel.visible=false" horizontalCenter="true" />
+				<mx:Button x="280" id="aboutCancelButton" label="Cancel" horizontalCenter="true" visible="false"/>
+				
+				<mx:Spacer width="50%"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:Panel>
+	
+
+	
+	<mx:HTTPService id="versionService" url="{checkVersionUrlString}"
+					result="checkVersionHandler(event)"  method="POST"/>
+
+</mx:WindowedApplication>

@@ -18,6 +18,7 @@ See also http://andyedmonds.com/scrutinizer
 
 ## TODO
 - update to fx: namespace and 4.6
+- long standing goal: swap guassian blur for more realistic low pass filter, see https://www.flickr.com/photos/32717188@N05/3082557059/
 
 # License
 TBD
