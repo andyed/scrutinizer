@@ -4,7 +4,7 @@ Open source release of the 2007 Scrutinizer vision simulating web browser built 
 See also http://andyedmonds.com/scrutinizer
 
 # What's it for?
-
+- In general, raising consciousness on the importance of visual design7
 
 # Related Works
 - Commercial Service: http://www.attensee.com
@@ -14,11 +14,13 @@ See also http://andyedmonds.com/scrutinizer
 # Code Update Status
 - Using Flex SDK 4.6 in 3.1 compatibility mode
 - Toolbar & context menu not working
--- So built-in screencapture unavailable
+-- So built-in screencapture, bookmarks unavailable
+- Disabled zoom blur interaction to enable mousewheel customization of fovea size for different ergnomocis
 
 ## TODO
 - update to fx: namespace and 4.6
 - long standing goal: swap guassian blur for more realistic low pass filter, see https://www.flickr.com/photos/32717188@N05/3082557059/
+- Document calibrating foveal size for screen res/distance
 
 # License
 TBD
