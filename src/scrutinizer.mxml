@@ -5,7 +5,6 @@
 	verticalScrollPolicy="off" horizontalScrollPolicy="off"
 	creationComplete="initApp()"
 	verticalGap="0" 
-	borderThickness="0" 
 	dropShadowEnabled="false"
 	width="960"
 	height="600"
@@ -36,7 +35,7 @@
 		import flash.display.Graphics;
 		import flash.display.MovieClip;
 		
-		import model.RegistrationEvent;
+		// import model.RegistrationEvent;
 		
 		import com.quasimondo.geom.ColorMatrix;
 		private var prefColorSaturation:Number = .2;
@@ -74,9 +73,9 @@
 		private var timer:Number;
 		//	private var previewWindow:Window;
 		
-		include "save.as";
+		//include "save.as"; TODO: Renable screenshots
 		include "sharedObject.as";
-		include "velocity.as"; // "velocity_guided.as"; // 
+		//include "velocity.as"; // "velocity_guided.as"; // 
 		include "menu.as";
 		
 		
@@ -277,7 +276,7 @@
 			private function mousemove(event:MouseEvent):void {
 			fovealView.x = mouseX - (fovealView.width/4);
 			fovealView.y = mouseY - (fovealView.height/4);
-			if(prefAutozoom == true)  logMouseMove(mouseX, mouseY, parseInt(new Date().getTime().toString()));
+			//if(prefAutozoom == true)  logMouseMove(mouseX, mouseY, parseInt(new Date().getTime().toString()));
 		}
 		
 		private function recomputeFoveal():void {
@@ -321,18 +320,15 @@
 		
 		private function initApp():void {
 		var today:Date = new Date();
-		getApplicationInformation();
-		trace(versionNumber);
-		aboutPanelHTML.location = 'http://andyedmonds.com/scrutinizer?v=' + versionNumber;
-		htmlControl.location = 'http://andyedmonds.com/scrutinizer?v=' + versionNumber;
-		expired =  (today > expireDate);
+		// getApplicationInformation(); TODO: Re-enable
+		//trace(versionNumber);
+		aboutPanelHTML.location = 'http://andyedmonds.com/scrutinizer?v=';// + versionNumber;
+		htmlControl.location = 'http://andyedmonds.com/scrutinizer?v=';// + versionNumber;
+
 		
-		if (expired){
-		var urlReq:URLRequest = new URLRequest(expireUrl);
-		htmlControl.htmlLoader.load( urlReq );
-		}
+
 		onCreationComplete();
-		if(firstrun) showTOS();
+		//if(firstrun) showTOS();
 		fsCM =createContextMenu( new ContextMenu());
 		
 		
@@ -525,11 +521,11 @@
 			aboutCancelButton.visible = false;
 			
 			aboutCloseButton.label = 'Close';
-			aboutPanelHTML.location = 'http://andyedmonds.com/scrutinizer?v='+versionNumber;
+			aboutPanelHTML.location = 'http://andyedmonds.com/scrutinizer?v=';//+versionNumber;
 			aboutPanel.visible=true;
 		}
 		private function showTOS():void {
-			aboutPanelHTML.location = 'http://andyedmonds.com/scrutinizer?v='+versionNumber;
+			aboutPanelHTML.location = 'http://andyedmonds.com/scrutinizer?v=';//+versionNumber;
 			aboutCloseButton.label = 'OK';
 			aboutCancelButton.visible = true;
 			aboutPanel.visible=true;
@@ -568,11 +564,10 @@
 	</mx:Script>
 	
 	
-	<mx:ApplicationControlBar dock="true" paddingTop="0" paddingBottom="0" borderThickness="0" cornerRadius="0" width="100%">
+	<mx:ApplicationControlBar dock="true" paddingTop="0" paddingBottom="0" cornerRadius="0" width="100%">
 		<mx:VBox width="100%">
 			<mx:HBox width="100%">
-				<mx:MenuBar  id="menubar"  labelField="@label" itemClick="fileMenuHandler(event);" dataProvider="{menuBarCollection}" click="trace('clik');">
-				</mx:MenuBar>
+				
 				<mx:Spacer width="100%"/>
 				<mx:Image source="icons/Scrutinizer_Logo_Dark.png" />	
 			</mx:HBox>
@@ -614,8 +609,8 @@
 	</mx:Panel>
 	
 
-	
+	<!--
 	<mx:HTTPService id="versionService" url="{checkVersionUrlString}"
-					result="checkVersionHandler(event)"  method="POST"/>
+					result="checkVersionHandler(event)"  method="POST"/> -->
 
 </mx:WindowedApplication>
