@@ -1,5 +1,7 @@
 # Scrutinizer
-Open source release of the 2007 Scrutinizer vision simulating web browser built with Adobe AIR.  
+Open source release of the 2007 Scrutinizer vision simulating web browser built with Adobe AIR. 
+
+Get the latest, via manual install (req. Adobe Air), here: https://github.com/andyed/scrutinizer/raw/master/releases/scrutinizer_latest.air
 
 See also http://andyedmonds.com/scrutinizer
 
