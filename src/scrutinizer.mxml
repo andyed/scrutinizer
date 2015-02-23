@@ -102,7 +102,7 @@
 		}
 		
 		
-		private function refreshOnResize(event:Event) {
+		private function refreshOnResize(event:Event):void {
 			grabScreen();
 		}
 		private function refreshScreen(event:MouseEvent):void {
@@ -175,7 +175,7 @@
 			//             	trace("Zoom from wheel " + event.delta + " at factor " + wheelDeltaFactor);
 			if(!event.ctrlKey  && prefAutozoom ==false) {
 				// Disabling until configuration of foveal size based upon screen available
-				//zoomFovea(event.delta * wheelDeltaFactor);
+				zoomFovea(event.delta * wheelDeltaFactor);
 				event.stopImmediatePropagation();
 			} else {
 				grabScreen();	
@@ -281,10 +281,11 @@
 		
 		private function recomputeFoveal():void {
 			var mod:Number = fovealDepth-1;
-			//trace("ZOOM: Computing foveal depth at " + mod );
+			trace("ZOOM: Computing foveal depth at " + mod );
 			var blur:BlurFilter = new BlurFilter(mod*1.04,mod*1.04,1);
-			if(mod && 1==0) {
-			foveal.filters = [blur];
+			// Skipping blur on foveal change for now
+			if(mod) {
+			//foveal.filters = [blur];
 			fovealWidth = prefFovealWidth * (1 + mod/5);
 			fovealHeight = prefFovealHeight * (1 + mod/5);
 			//trace("Resizing Mask to " + fovealWidth + " x " + fovealHeight);
@@ -329,11 +330,11 @@
 
 		onCreationComplete();
 		//if(firstrun) showTOS();
-		fsCM =createContextMenu( new ContextMenu());
+		//fsCM =createContextMenu( new ContextMenu());
 		
 		
 		// finally, attach the context menu to a movieclip
-		this.contextMenu = fsCM;
+		//this.contextMenu = fsCM;
 		
 		//trace("Adding Event Listeners");
 		
@@ -359,7 +360,7 @@
 				event.stopImmediatePropagation();
 				//event.preventDefault();
 				// Disabling until configuration of foveal size based upon screen available
-				//zoomFovea(-1);
+				zoomFovea(-1);
 			
 				} else {
 					grabScreen();	
@@ -372,7 +373,7 @@
 					event.stopImmediatePropagation();
 					//event.preventDefault();
 					//  Disabling until configuration of foveal size based upon screen available
-					// zoomFovea(1);
+					 zoomFovea(1);
 				} else {
 					grabScreen();	
 				}
@@ -430,8 +431,7 @@
 			//trace("Zoomin");
 			if((delta>0 && fovealDepth<maxZoomOut) || (delta<0 && fovealDepth > 1)) {
 			// Disabling until configuration of foveal size based upon screen available
-			// fovealDepth+=delta;
-			fovealDepth = 1; 
+			fovealDepth+=delta;
 			if(fovealDepth < 1) fovealDepth = 1;
 			
 			if(fovealDepth > maxZoomOut) fovealDepth = maxZoomOut;
@@ -493,16 +493,16 @@
 				//htmlControl.mouseEnabled=true;
 				//htmlControl.mouseChildren=true;
 				//					trace("Removing Event Listeners");
-				stage.removeEventListener(MouseEvent.MOUSE_WHEEL, doMouseWheel, true);
+				//stage.removeEventListener(MouseEvent.MOUSE_WHEEL, doMouseWheel, true);
 				stage.removeEventListener(KeyboardEvent.KEY_UP, keyHandler, true);
-				systemManager.removeEventListener(MouseEvent.MOUSE_WHEEL, doMouseWheel, true);
+				//systemManager.removeEventListener(MouseEvent.MOUSE_WHEEL, doMouseWheel, true);
 				systemManager.removeEventListener(MouseEvent.MOUSE_DOWN ,refreshScreen,true);
 				systemManager.removeEventListener(Event.RESIZE ,refreshOnResize,true);
 				
 			
 			}else {
-			
-				stage.addEventListener(MouseEvent.MOUSE_WHEEL, doMouseWheel,true);
+				// Lets use wheel for scrolling and keys for foveal size
+				//stage.addEventListener(MouseEvent.MOUSE_WHEEL, doMouseWheel,true);
 				stage.addEventListener(KeyboardEvent.KEY_UP,keyHandler,true);
 				//toggleViz.toggled = true;	
 				//menubar.menus[3].menuBarItems[2].@toggled = true;								
