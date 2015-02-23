@@ -564,15 +564,10 @@
 	</mx:Script>
 	
 	
-	<mx:ApplicationControlBar dock="true" paddingTop="0" paddingBottom="0" cornerRadius="0" width="100%">
+	<mx:ApplicationControlBar dock="true" paddingTop="2" paddingBottom="0" cornerRadius="0" width="100%">
 		<mx:VBox width="100%">
 			<mx:HBox width="100%">
-				
-				<mx:Spacer width="100%"/>
 				<mx:Image source="icons/Scrutinizer_Logo_Dark.png" />	
-			</mx:HBox>
-			<mx:HBox width="100%">
-				
 				<mx:Button id="backBtn" click="goBack()" toolTip="Go Back one page" 
 						   icon="@Embed(source='icons/scrutinizer_arrow_back.png')" themeColor="#99CC33"/>
 				<mx:Button id="forwardBtn" click="goForward()" toolTip="Go Forward one page" themeColor="#99CC33" >
@@ -586,6 +581,7 @@
 				</mx:Button>
 				<mx:Button id="aboutBtn" click="showAbout()" toolTip="See more About Scrutinizer" 
 						   icon="@Embed(source='icons/about!2.png')" themeColor="#99CC33"/>
+				
 			</mx:HBox>
 		</mx:VBox>	
 		
