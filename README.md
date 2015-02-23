@@ -6,12 +6,15 @@ Get the latest, via manual install (req. Adobe Air), here: https://github.com/an
 See also http://andyedmonds.com/scrutinizer
 
 # What's it for?
-- In general, raising consciousness on the importance of visual design7
+- In general, raising consciousness on the importance of visual design
+- Studying how your page design enables visual search
+- Observing users while using the browser to better enable you to understand their thought process
 
 # Related Works
 - Commercial Service: http://www.attensee.com
 - Academic WOrk
 -- D. Lagun, E. Agichtein, "ViewSer: A Tool for Large-Scale Studies of Web Search Result Examination", to appear at CHI 2011. http://www.mathcs.emory.edu/~dlagun/pubs/sigir636-lagun.pdf
+- The Flashlight Project @ http://vlab.ethz.ch/flashlight/index.php
 
 # Code Update Status
 - Using Flex SDK 4.6 in 3.1 compatibility mode
