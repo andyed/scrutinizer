@@ -27,8 +27,6 @@ See also http://andyedmonds.com/scrutinizer
 - long standing goal: swap guassian blur for more realistic low pass filter, see https://www.flickr.com/photos/32717188@N05/3082557059/
 - Document calibrating foveal size for screen res/distance
 
-# License
-TBD
 
 # Contributors
 - Creator: Andy Edmonds
