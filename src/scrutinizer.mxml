@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:WindowedApplication 
-	xmlns:mx="http://www.adobe.com/2006/mxml"
-	layout="absolute"
-	verticalScrollPolicy="off" horizontalScrollPolicy="off"
-	creationComplete="initApp()"
-	verticalGap="0" 
-	dropShadowEnabled="false"
+<s:WindowedApplication 
+	xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:s="library://ns.adobe.com/flex/spark"
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	creationComplete="initApp()"	
 	width="960"
 	height="600"
 
 	>
-	<mx:Script>
+	<fx:Script>
 		<![CDATA[
 		import mx.core.Window;
 		import mx.events.ResizeEvent;
@@ -553,16 +551,17 @@
 		
 		
 		]]>
-	</mx:Script>
+	</fx:Script>
 	
 	
-	<mx:ApplicationControlBar dock="true" paddingTop="2" paddingBottom="0" cornerRadius="0" width="100%">
+	<mx:ApplicationControlBar id="browserControlBar" width="100%" height="90" cornerRadius="0"
+							   paddingBottom="0" paddingTop="2">
 		<mx:VBox width="100%">
 			<mx:HBox width="100%">
 				<mx:Image source="icons/Scrutinizer_Logo_Dark.png" />	
 				<mx:Button id="backBtn" click="goBack()" toolTip="Go Back one page" 
-						   icon="@Embed(source='icons/scrutinizer_arrow_back.png')" themeColor="#99CC33"/>
-				<mx:Button id="forwardBtn" click="goForward()" toolTip="Go Forward one page" themeColor="#99CC33" >
+						   icon="@Embed(source='icons/scrutinizer_arrow_back.png')" chromeColor="#99CC33"/>
+				<mx:Button id="forwardBtn" click="goForward()" toolTip="Go Forward one page" chromeColor="#99CC33" >
 					<mx:icon>@Embed(source='icons/scrutinizer_arrow_forward.png')</mx:icon>
 				</mx:Button>
 				<mx:TextInput id="urlTxt" text="http://andyedmonds.com/scrutinizer" width="100%" keyUp="urlInput(event);" />
@@ -572,19 +571,20 @@
 					<mx:icon>@Embed(source='icons/scrutinzer_logo_eyeball.png')</mx:icon>
 				</mx:Button>
 				<mx:Button id="aboutBtn" click="showAbout()" toolTip="See more About Scrutinizer" 
-						   icon="@Embed(source='icons/about!2.png')" themeColor="#99CC33"/>
+						   icon="@Embed(source='icons/about!2.png')" chromeColor="#99CC33"/>
 				
 			</mx:HBox>
 		</mx:VBox>	
 		
 	</mx:ApplicationControlBar>
 	
-	<mx:Panel id="htmlContainer" width="100%" height="100%" backgroundColor="red" layout="absolute" cornerRadius="0" dropShadowEnabled="false" headerHeight="0" paddingLeft="0" borderThicknessLeft="0" borderThicknessRight="0" borderThicknessBottom="0">
+	<mx:Panel id="htmlContainer" width="100%" height="100%" backgroundColor="red" layout="absolute" cornerRadius="0" headerHeight="0" paddingLeft="0" 
+			  >
 		<mx:HTML location="" id="htmlControl"  locationChange="goTriggered(event)"
 				 width="100%" height="100%" paddingLeft="0" complete="pageLoaded()" mouseUp="grabScreen();" />		
 	</mx:Panel>
 	<mx:Panel id="aboutPanel" visible="false" includeInLayout="false" horizontalCenter="true" verticalCenter="true" x="200" y="100" width="600" height="450" >
-		<mx:VBox width="100%" height="100%" borderThickness="20">
+		<mx:VBox width="100%" height="100%" >
 			<mx:HTML id="aboutPanelHTML" location="" width="100%" height="100%" />
 			<mx:HBox width="100%" paddingBottom="20">
 				<mx:Spacer width="50%"/>
@@ -601,4 +601,4 @@
 	<mx:HTTPService id="versionService" url="{checkVersionUrlString}"
 					result="checkVersionHandler(event)"  method="POST"/> -->
 
-</mx:WindowedApplication>
+</s:WindowedApplication>
