@@ -103,6 +103,7 @@
 		
 		
 		private function refreshOnResize(event:Event):void {
+			trace("resize event");
 			grabScreen();
 		}
 		private function refreshScreen(event:MouseEvent):void {
@@ -186,7 +187,7 @@
 		private function overlayMask():void {
 		
 			var cm:ColorMatrix = new ColorMatrix();
-			cm.adjustSaturation(.2);
+			cm.adjustSaturation(.8);
 			
 			foveal.width = periphery.width;
 			foveal.height = periphery.height;
@@ -306,8 +307,8 @@
 		//this function is called by the 'loader' object when the file is loaded and ready to use
 		private function onLoadInit(event:Event):void
 		{
-		//			    trace("Loaded. " + firstpage);
-		overlayMask();	
+			//trace("Loaded. " + firstpage);
+			overlayMask();	
 		
 		};
 		
@@ -320,35 +321,29 @@
 		
 		
 		private function initApp():void {
-		var today:Date = new Date();
-		// getApplicationInformation(); TODO: Re-enable
-		//trace(versionNumber);
-		aboutPanelHTML.location = 'http://andyedmonds.com/scrutinizer?v=';// + versionNumber;
-		htmlControl.location = 'http://andyedmonds.com/scrutinizer?v=';// + versionNumber;
-
+			var today:Date = new Date();
+			// getApplicationInformation(); TODO: Re-enable
+			//trace(versionNumber);
+			aboutPanelHTML.location = 'http://andyedmonds.com/scrutinizer?v=';// + versionNumber;
+			htmlControl.location = 'http://andyedmonds.com/scrutinizer?v=';// + versionNumber;
+	
+			onCreationComplete();
+			//if(firstrun) showTOS();
+			//fsCM =createContextMenu( new ContextMenu());
 		
-
-		onCreationComplete();
-		//if(firstrun) showTOS();
-		//fsCM =createContextMenu( new ContextMenu());
-		
-		
-		// finally, attach the context menu to a movieclip
-		//this.contextMenu = fsCM;
-		
-		//trace("Adding Event Listeners");
-		
-		
-		systemManager.addEventListener(MouseEvent.MOUSE_MOVE ,mousemove,true);
-		
-		systemManager.addEventListener(MouseEvent.MOUSE_DOWN ,refreshScreen,true);
-		
-		systemManager.addEventListener(Event.RESIZE, refreshOnResize, true);
-		// ,refreshScreen,true);
+			// finally, attach the context menu to a movieclip
+			//this.contextMenu = fsCM;
+			
+			//trace("Adding Event Listeners");	
+			systemManager.addEventListener(MouseEvent.MOUSE_MOVE ,mousemove,true);
+			systemManager.addEventListener(MouseEvent.MOUSE_DOWN ,refreshScreen,true);
+			// Not firing?  TODO
+			systemManager.addEventListener(Event.RESIZE, refreshOnResize, true);
+			// ,refreshScreen,true);
 		
 		}
 		private function keyHandler(event:KeyboardEvent):void {
-			//	           trace(event.keyCode + "/" + event.charCode+ ' vs ' + Keyboard.DOWN + " with ctrl " + event.ctrlKey);
+			//trace(event.keyCode + "/" + event.charCode+ ' vs ' + Keyboard.DOWN + " with ctrl " + event.ctrlKey);
 			//overlayMask();
 			//getScreen();
 			switch (event.keyCode)
@@ -359,7 +354,6 @@
 				trace("DOWN");
 				event.stopImmediatePropagation();
 				//event.preventDefault();
-				// Disabling until configuration of foveal size based upon screen available
 				zoomFovea(-1);
 			
 				} else {
@@ -372,7 +366,6 @@
 					trace("UP");
 					event.stopImmediatePropagation();
 					//event.preventDefault();
-					//  Disabling until configuration of foveal size based upon screen available
 					 zoomFovea(1);
 				} else {
 					grabScreen();	
@@ -396,12 +389,12 @@
 			if(htmlControl.htmlLoader.historyLength > 1) {
 			//backBtn.alpha = 100;
 			//backBtn.enabled = true;
-			//						trace("Back enabled");
+			//trace("Back enabled");
 			
 			} else {
 			//backBtn.alpha = 10;
 			//backBtn.enabled = false;
-			//						trace("Back disabled");
+			//trace("Back disabled");
 			
 			}
 			
@@ -447,45 +440,45 @@
 		}
 		
 		private function goToURL() : void {
-		//				trace("Go To URL..."+ urlTxt.text);
-		if (urlTxt.text.indexOf(":")<0) {
-		urlTxt.text = "http://"+urlTxt.text;
+			//				trace("Go To URL..."+ urlTxt.text);
+			if (urlTxt.text.indexOf(":")<0) {
+			urlTxt.text = "http://"+urlTxt.text;
 		}
 		var urlReq:URLRequest = new URLRequest(urlTxt.text);
-		goBtn.label = "... ";
-		htmlControl.htmlLoader.load( urlReq );
+			goBtn.label = "... ";
+			htmlControl.htmlLoader.load( urlReq );
 		}
 		private function goBackContext(event:Event):void {
-		goBack();
+			goBack();
 		
 		}
 		private function goBack() : void {
 		htmlControl.historyBack();
 		}
 		private function goForward() : void {
-		htmlControl.historyForward();
+			htmlControl.historyForward();
 		}
+			
 		private function refresh() : void {
-		htmlControl.htmlLoader.reload();
+			htmlControl.htmlLoader.reload();
 		}
+			
 		private function cancelLoad() : void {
-		htmlControl.htmlLoader.cancelLoad();
-		goBtn.label = " GO ";
+			htmlControl.htmlLoader.cancelLoad();
+			goBtn.label = " GO ";
 		}
+			
 		private function pageLoaded() : void {
-		
-		var url:String = htmlControl.htmlLoader.location;
-		
-		
-		urlTxt.text = url;
-		goBtn.label=" GO ";
-		grabScreen();
-		
+			var url:String = htmlControl.htmlLoader.location;
+			urlTxt.text = url;
+			goBtn.label=" GO ";
+			grabScreen();		
 		}
+		// Menubar disabled for now
 		private function toggleOverlay():void {
 			if (fovealView.visible) {
 				//toggleViz.toggled = false;
-				//					trace(">>>>>>>>>>" + menubar.menuBarItems[3]);//.menuBarItems[2]);//[2].@toggled = false;
+				//trace(">>>>>>>>>>" + menubar.menuBarItems[3]);//.menuBarItems[2]);//[2].@toggled = false;
 				
 				fovealView.visible=false;
 				periphery.visible=false;
@@ -519,7 +512,6 @@
 		}
 		private function showAbout():void {
 			aboutCancelButton.visible = false;
-			
 			aboutCloseButton.label = 'Close';
 			aboutPanelHTML.location = 'http://andyedmonds.com/scrutinizer?v=';//+versionNumber;
 			aboutPanel.visible=true;
@@ -546,16 +538,16 @@
 		// based on what mode we are in.
 		private function menuHandler(event:ContextMenuEvent):void{
 			if (stage.displayState == StageDisplayState.NORMAL){
-			event.target.customItems[2].enabled = true;
-			event.target.customItems[3].enabled = false;
+				event.target.customItems[2].enabled = true;
+				event.target.customItems[3].enabled = false;
 			}
 			else{
-			event.target.customItems[2].enabled = false;
-			event.target.customItems[3].enabled = true;
+				event.target.customItems[2].enabled = false;
+				event.target.customItems[3].enabled = true;
 			}
-			}
+		}
 			
-			private function windowResizeHandler(event:ResizeEvent):void {
+		private function windowResizeHandler(event:ResizeEvent):void {
 			grabScreen();	
 		}
 		
