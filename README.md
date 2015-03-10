@@ -10,17 +10,22 @@ See also http://andyedmonds.com/scrutinizer
 - Studying how your page design enables visual search
 - Observing users while using the browser to better enable you to understand their thought process
 
+# How does it work?
+Using an embedded browser in the Adobe Air platform, the Scrutinizer Browser, turned on with the Eye icon, creates a small window of clear visibility in the web page. Moving the mouse moves the visible area, with the remainder of the page both blurred and desaturated.  This simulates what your brain is actually seeing at any moment in time -- high res and color for a small angle of vision, and lower resolution with less color in the wider angles.
+
+The software captures a bitmap of the page, blurs and desaturates it. The overlay is placed on top of the web page with a foveal sized mask enabling see through wherever the mouse is located.
+
 # Related Works
 - Commercial Service: http://www.attensee.com
 - Academic Work
--- Alex Faaborg's MS Work: http://alumni.media.mit.edu/~faaborg/research/cornell/cg_fovealvision_site/index.htm (2001)
--- D. Lagun, E. Agichtein, "ViewSer: A Tool for Large-Scale Studies of Web Search Result Examination", to appear at CHI 2011. http://www.mathcs.emory.edu/~dlagun/pubs/sigir636-lagun.pdf
--- The Flashlight Project @ http://vlab.ethz.ch/flashlight/index.php.  Schulte-Mecklenbeck, Michael and Murphy, Ryan O. and Hutzler, Florian, Flashlight: Recording Information Acquisition Online (May 13, 2010). Available at SSRN: http://ssrn.com/abstract=1433225 or http://dx.doi.org/10.2139/ssrn.1433225
+    - Alex Faaborg's MS Work: http://alumni.media.mit.edu/~faaborg/research/cornell/cg_fovealvision_site/index.htm (2001)
+    - D. Lagun, E. Agichtein, "ViewSer: A Tool for Large-Scale Studies of Web Search Result Examination", to appear at CHI 2011. http://www.mathcs.emory.edu/~dlagun/pubs/sigir636-lagun.pdf
+    - The Flashlight Project @ http://vlab.ethz.ch/flashlight/index.php.  Schulte-Mecklenbeck, Michael and Murphy, Ryan O. and Hutzler, Florian, Flashlight: Recording Information Acquisition Online (May 13, 2010). Available at SSRN: http://ssrn.com/abstract=1433225 or http://dx.doi.org/10.2139/ssrn.1433225
 
 # Code Update Status
 - Using Flex SDK 4.6 in 3.1 compatibility mode
 - Toolbar & context menu not working
--- So built-in screencapture, bookmarks unavailable
+    - So built-in screencapture, bookmarks unavailable
 - Disabled zoom blur interaction to enable mousewheel customization of fovea size for different ergnomocis
 
 ## TODO
