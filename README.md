@@ -20,6 +20,7 @@ The software captures a bitmap of the page, blurs and desaturates it. The overla
 - Academic Work
     - Alex Faaborg's MS Work: http://alumni.media.mit.edu/~faaborg/research/cornell/cg_fovealvision_site/index.htm (2001)
     - D. Lagun, E. Agichtein, "ViewSer: A Tool for Large-Scale Studies of Web Search Result Examination", to appear at CHI 2011. http://www.mathcs.emory.edu/~dlagun/pubs/sigir636-lagun.pdf
+        - See also https://www.researchgate.net/publication/221300903_ViewSer_enabling_large-scale_remote_user_studies_of_web_search_examination_and_interaction
     - The Flashlight Project @ http://vlab.ethz.ch/flashlight/index.php.  Schulte-Mecklenbeck, Michael and Murphy, Ryan O. and Hutzler, Florian, Flashlight: Recording Information Acquisition Online (May 13, 2010). Available at SSRN: http://ssrn.com/abstract=1433225 or http://dx.doi.org/10.2139/ssrn.1433225
 
 # Code Update Status
